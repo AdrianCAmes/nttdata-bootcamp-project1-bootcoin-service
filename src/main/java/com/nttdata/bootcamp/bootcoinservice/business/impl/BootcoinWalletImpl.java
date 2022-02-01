@@ -60,8 +60,7 @@ public class BootcoinWalletImpl implements BootcoinWalletService {
                     walletToCreate.setBootcoinAmount(50.0);
 
                     log.info("Creating new wallet: [{}]", walletToCreate.toString());
-                    Mono<BootcoinWallet> nestedCreatedWallet = walletRepository.insert(walletToCreate);
-                    return nestedCreatedWallet;
+                    return walletRepository.insert(walletToCreate);
                 })
                 .switchIfEmpty(Mono.error(new NoSuchElementException("Customer does not exist")));
 
@@ -238,7 +237,7 @@ public class BootcoinWalletImpl implements BootcoinWalletService {
         }
 
         if (customerFromMicroservice.getCustomerType() != null &&
-            customerFromMicroservice.getCustomerType().getGroup() == constants.getCustomerPersonalGroup() &&
+            customerFromMicroservice.getCustomerType().getGroup().contentEquals(constants.getCustomerPersonalGroup()) &&
             (customerFromMicroservice.getPersonDetails().getIdentityNumber() == null ||
              customerFromMicroservice.getPersonDetails().getMobileNumber() == null ||
              customerFromMicroservice.getPersonDetails().getEmail() == null)) {
@@ -248,7 +247,7 @@ public class BootcoinWalletImpl implements BootcoinWalletService {
         }
 
         if (customerFromMicroservice.getCustomerType() != null &&
-            customerFromMicroservice.getCustomerType().getGroup() == constants.getCustomerBusinessGroup() &&
+            customerFromMicroservice.getCustomerType().getGroup().contentEquals(constants.getCustomerBusinessGroup()) &&
             (customerFromMicroservice.getBusinessDetails().getRuc() == null ||
              customerFromMicroservice.getBusinessDetails().getRepresentatives().get(0).getMobileNumber() == null ||
              customerFromMicroservice.getBusinessDetails().getRepresentatives().get(0).getEmail() == null)) {
